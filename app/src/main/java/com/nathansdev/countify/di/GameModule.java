@@ -14,15 +14,19 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class GameModule {
 
+    @PerFragment
     @ContributesAndroidInjector
     abstract IntroFragment provideIntroFragmentFactory();
 
+    @PerFragment
     @ContributesAndroidInjector
     abstract ChooseNumberFragment provideChooseNumberFragmentFactory();
 
+    @PerFragment
     @ContributesAndroidInjector
     abstract PlayFragment providePlayFragmentFactory();
 
+    @PerFragment
     @ContributesAndroidInjector
     abstract ResultFragment provideResultFragmentFactory();
 }
