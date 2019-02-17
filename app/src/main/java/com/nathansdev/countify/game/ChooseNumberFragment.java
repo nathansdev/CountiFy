@@ -88,7 +88,7 @@ public class ChooseNumberFragment extends BaseFragment {
      * initializing list to choose random numbers.
      */
     private void initNumbers() {
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             smallNumbersList.add(i);
             smallNumbersList.add(i);
         }

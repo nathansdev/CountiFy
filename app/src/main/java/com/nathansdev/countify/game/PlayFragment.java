@@ -28,7 +28,7 @@ import java.util.Random;
 /**
  * Screen Where solving the target number happens.
  */
-public class PlayFragment extends BaseFragment {
+public class PlayFragment extends BaseFragment implements View.OnClickListener {
 
     @Inject
     public PlayFragment() {
@@ -39,10 +39,36 @@ public class PlayFragment extends BaseFragment {
     RxEventBus eventBus;
     @BindView(R.id.text_target_number)
     TextView textTarget;
-    @BindView(R.id.button_start)
-    Button buttonStart;
     @BindView(R.id.text_timer)
     TextView textTimer;
+    @BindView(R.id.button_start)
+    Button buttonStart;
+    @BindView(R.id.button_reset)
+    Button buttonReset;
+    @BindView(R.id.button_operator_add)
+    Button buttonAdd;
+    @BindView(R.id.button_operator_multiply)
+    Button buttonMultiply;
+    @BindView(R.id.button_operator_divide)
+    Button buttonDivide;
+    @BindView(R.id.button_operator_subtract)
+    Button buttonSubtract;
+    @BindView(R.id.button_operand_one)
+    Button buttonOperandOne;
+    @BindView(R.id.button_operand_two)
+    Button buttonOperandTwo;
+    @BindView(R.id.button_operand_three)
+    Button buttonOperandThree;
+    @BindView(R.id.button_operand_four)
+    Button buttonOperandFour;
+    @BindView(R.id.button_operand_five)
+    Button buttonOperandFive;
+    @BindView(R.id.button_operand_six)
+    Button buttonOperandSix;
+    @BindView(R.id.text_result)
+    TextView textResult;
+    @BindView(R.id.text_title_result)
+    TextView textTitleResult;
 
     private List<Integer> randomNumberList = new ArrayList<>();
     private int target;
@@ -62,12 +88,18 @@ public class PlayFragment extends BaseFragment {
 
     @Override
     protected void setUpView(View view) {
-        buttonStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startTimerTask();
-            }
-        });
+        buttonStart.setOnClickListener(this);
+        buttonReset.setOnClickListener(this);
+        buttonOperandOne.setOnClickListener(this);
+        buttonOperandTwo.setOnClickListener(this);
+        buttonOperandThree.setOnClickListener(this);
+        buttonOperandFour.setOnClickListener(this);
+        buttonOperandFive.setOnClickListener(this);
+        buttonOperandSix.setOnClickListener(this);
+        buttonAdd.setOnClickListener(this);
+        buttonMultiply.setOnClickListener(this);
+        buttonDivide.setOnClickListener(this);
+        buttonSubtract.setOnClickListener(this);
     }
 
     public void handleNumbersSelected(List<Integer> list) {
@@ -108,5 +140,64 @@ public class PlayFragment extends BaseFragment {
                         eventBus.send(new Pair<>(AppEvents.GAME_ENDED, data));
                     }
                 }).show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        handleDestroy();
+        super.onDestroyView();
+    }
+
+    private void handleDestroy() {
+        buttonStart.setOnClickListener(null);
+        buttonReset.setOnClickListener(null);
+        buttonOperandOne.setOnClickListener(null);
+        buttonOperandTwo.setOnClickListener(null);
+        buttonOperandThree.setOnClickListener(null);
+        buttonOperandFour.setOnClickListener(null);
+        buttonOperandFive.setOnClickListener(null);
+        buttonOperandSix.setOnClickListener(null);
+        buttonAdd.setOnClickListener(null);
+        buttonMultiply.setOnClickListener(null);
+        buttonDivide.setOnClickListener(null);
+        buttonSubtract.setOnClickListener(null);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.button_start:
+                startTimerTask();
+                break;
+            case R.id.button_reset:
+                resetGame();
+                break;
+            case R.id.button_operand_one:
+                break;
+            case R.id.button_operand_two:
+                break;
+            case R.id.button_operand_three:
+                break;
+            case R.id.button_operand_four:
+                break;
+            case R.id.button_operand_five:
+                break;
+            case R.id.button_operand_six:
+                break;
+            case R.id.button_operator_add:
+                break;
+            case R.id.button_operator_subtract:
+                break;
+            case R.id.button_operator_divide:
+                break;
+            case R.id.button_operator_multiply:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void resetGame() {
     }
 }
