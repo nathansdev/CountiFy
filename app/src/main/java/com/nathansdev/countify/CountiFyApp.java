@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import com.nathansdev.countify.di.DaggerAppComponent;
+import com.nathansdev.countify.log.TimberThreadDebugTree;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
+import timber.log.Timber;
 
 import javax.inject.Inject;
 
@@ -25,6 +27,7 @@ public class CountiFyApp extends Application implements HasActivityInjector {
                 .application(this)
                 .build()
                 .inject(this);
+        Timber.plant(new TimberThreadDebugTree());
     }
 
     @Override
