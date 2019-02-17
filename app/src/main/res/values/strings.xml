@@ -4,4 +4,11 @@
     <string name="large">Large</string>
     <string name="small">small</string>
     <string name="choose_number_hint">Select 6 numbers by clicking either large or small buttons below</string>
+    <string name="play_again">play again</string>
+    <string name="result">Result</string>
+    <string name="start">start</string>
+    <string name="timer_hint">00:00</string>
+    <string name="ok">OK</string>
+    <string name="time_up">Time Up</string>
+    <string name="alert">Alert!</string>
 </resources>

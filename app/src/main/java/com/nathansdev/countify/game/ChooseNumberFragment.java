@@ -112,6 +112,7 @@ public class ChooseNumberFragment extends BaseFragment {
 
     public void selectLargeNumbers() {
         if (chosenNumbersList.size() >= 6) {
+            onNumbersRangeReached();
             return;
         }
         Integer selected = largeNumbersList.get(new Random().nextInt(largeNumbersList.size()));

@@ -164,7 +164,7 @@ public class GameActivity extends BaseActivity {
             chooseNumberContainer.setVisibility(View.INVISIBLE);
             playGameContainer.setVisibility(View.INVISIBLE);
             resultContainer.setVisibility(View.INVISIBLE);
-        } else if (uiState.isChosingNumbers()) {
+        } else if (uiState.isChoosingNumbers()) {
             introContainer.setVisibility(View.INVISIBLE);
             chooseNumberContainer.setVisibility(View.VISIBLE);
             playGameContainer.setVisibility(View.INVISIBLE);
@@ -196,6 +196,10 @@ public class GameActivity extends BaseActivity {
             if (event.second instanceof List) {
                 handleNumbersChosen((List<Integer>) event.second);
             }
+        } else if (event.first.equalsIgnoreCase(AppEvents.PLAY_GAME_AGAIN_CLICKED)) {
+            handlePlayGameClicked();
+        } else if (event.first.equalsIgnoreCase(AppEvents.GAME_ENDED)) {
+            handleGameEnded((GameData) event.second);
         }
     }
 
@@ -229,6 +233,12 @@ public class GameActivity extends BaseActivity {
         return (ResultFragment) getSupportFragmentManager().findFragmentByTag(FRAG_TAG_RESULT);
     }
 
+    private void handleGameEnded(GameData data) {
+        uiState = uiState.withBuild().mode(UIState.MODE_RESULT).build();
+        showUI();
+        resultFragment.handleResultClicked(data);
+    }
+
     private void handlePlayGameClicked() {
         uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
         showUI();
@@ -255,7 +265,7 @@ public class GameActivity extends BaseActivity {
         } else if (uiState.isPlayingGame()) {
             uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
             showUI();
-        } else if (uiState.isChosingNumbers()) {
+        } else if (uiState.isChoosingNumbers()) {
             uiState = uiState.withBuild().mode(UIState.MODE_INTRO).build();
             showUI();
         } else if (uiState.isIntro()) {
@@ -284,7 +294,7 @@ public class GameActivity extends BaseActivity {
             return mode() == MODE_INTRO;
         }
 
-        boolean isChosingNumbers() {
+        boolean isChoosingNumbers() {
             return mode() == MODE_CHOOSE_NUMBERS;
         }
 
