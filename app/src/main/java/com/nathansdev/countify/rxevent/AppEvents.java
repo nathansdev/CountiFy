@@ -9,4 +9,6 @@ public final class AppEvents {
     public static final String SELECT_SMALL_NUMBER_CLICKED = "selectSmallNumberClicked";
     public static final String SELECT_LARGE_NUMBER_CLICKED = "selectLargeNumberClicked";
     public static final String RANDOM_NUMBERS_CHOSEN = "randomNumbersChosen";
+    public static final String PLAY_GAME_AGAIN_CLICKED = "playGameAgainClicked";
+    public static final String GAME_ENDED = "gameEnded";
 }
