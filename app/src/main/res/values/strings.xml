@@ -16,4 +16,5 @@
     <string name="subtract_operator">-</string>
     <string name="multiply_operator">*</string>
     <string name="divide_operator">/</string>
+    <string name="solution">solution</string>
 </resources>

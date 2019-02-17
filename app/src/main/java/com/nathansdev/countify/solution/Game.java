@@ -26,8 +26,8 @@ public class Game {
             }
 
             for (int j = i + 1; j < nb; j++) {
-                for (int k = 0; k < OPERATIONS.length; k++) {
-                    int res = OPERATIONS[k].solve(t[i], t[j]);
+                for (Operation OPERATION : OPERATIONS) {
+                    int res = OPERATION.solve(t[i], t[j]);
 
                     if (res != 0) {
                         int savei = t[i], savej = t[j];
@@ -36,7 +36,7 @@ public class Game {
 
                         if (findSolution(t, nb - 1, total)) {
                             solution.add(Math.max(savei, savej) + " " +
-                                    OPERATIONS[k].symbol() + " " +
+                                    OPERATION.symbol() + " " +
                                     Math.min(savei, savej) + " = " + res);
                             return true;
                         }

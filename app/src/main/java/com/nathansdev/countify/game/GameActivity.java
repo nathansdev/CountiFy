@@ -197,7 +197,7 @@ public class GameActivity extends BaseActivity {
                 handleNumbersChosen((List<Integer>) event.second);
             }
         } else if (event.first.equalsIgnoreCase(AppEvents.PLAY_GAME_AGAIN_CLICKED)) {
-            handlePlayGameClicked();
+            handlePlayGameAgainClicked();
         } else if (event.first.equalsIgnoreCase(AppEvents.GAME_ENDED)) {
             handleGameEnded((GameData) event.second);
         }
@@ -242,6 +242,12 @@ public class GameActivity extends BaseActivity {
     private void handlePlayGameClicked() {
         uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
         showUI();
+    }
+
+    private void handlePlayGameAgainClicked() {
+        uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
+        showUI();
+        chooseNumberFragment.reset();
     }
 
     private void handleSmallNumberSelection() {

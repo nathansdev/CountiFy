@@ -141,4 +141,10 @@ public class ChooseNumberFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
     }
+
+    public void reset() {
+        builder.setLength(0);
+        textChosenNumber.setText("");
+        chosenNumbersList.clear();
+    }
 }
