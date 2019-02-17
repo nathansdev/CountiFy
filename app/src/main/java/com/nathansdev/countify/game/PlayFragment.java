@@ -12,7 +12,11 @@ import com.nathansdev.countify.base.BaseFragment;
 import com.nathansdev.countify.rxevent.RxEventBus;
 
 import javax.inject.Inject;
+import java.util.List;
 
+/**
+ * Screen Where solving the target number happens.
+ */
 public class PlayFragment extends BaseFragment {
 
     @Inject
@@ -38,6 +42,10 @@ public class PlayFragment extends BaseFragment {
 
     @Override
     protected void setUpView(View view) {
+
+    }
+
+    public void handleNumbersSelected(List<Integer> list) {
 
     }
 }

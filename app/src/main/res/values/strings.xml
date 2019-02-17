@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">CountiFy</string>
     <string name="play">play</string>
+    <string name="large">Large</string>
+    <string name="small">small</string>
+    <string name="choose_number_hint">Select 6 numbers by clicking either large or small buttons below</string>
 </resources>

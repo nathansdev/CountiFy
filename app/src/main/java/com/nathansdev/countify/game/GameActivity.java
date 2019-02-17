@@ -1,12 +1,16 @@
 package com.nathansdev.countify.game;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.google.auto.value.AutoValue;
 import com.nathansdev.countify.R;
 import com.nathansdev.countify.base.BaseActivity;
+import com.nathansdev.countify.rxevent.AppEvents;
 import com.nathansdev.countify.rxevent.RxEventBus;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -14,6 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * App main activity.
@@ -40,7 +45,7 @@ public class GameActivity extends BaseActivity {
 
     // bind views
     @BindView(R.id.root)
-    View rootContainer;
+    ViewGroup rootView;
     @BindView(R.id.intro_container)
     View introContainer;
     @BindView(R.id.choose_number_container)
@@ -51,15 +56,17 @@ public class GameActivity extends BaseActivity {
     View resultContainer;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private UIState uiState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         ButterKnife.bind(this);
+        initState();
         setUpSubscription();
         addFragmentsToContainer();
-        setUpViews();
+        showUI();
     }
 
     @Override
@@ -80,7 +87,17 @@ public class GameActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        handleBackPressed();
+    }
+
+    /**
+     * initializing the UI with state intro.
+     */
+    private void initState() {
+        if (uiState == null) {
+            // default uiState if no restored uiState found.
+            uiState = UIState.builder().mode(UIState.MODE_INTRO).build();
+        }
     }
 
     /**
@@ -138,22 +155,48 @@ public class GameActivity extends BaseActivity {
         }
     }
 
-
     /**
      * initialize views based on current mode.
      */
-    private void setUpViews() {
-        introContainer.setVisibility(View.VISIBLE);
-        chooseNumberContainer.setVisibility(View.INVISIBLE);
-        playGameContainer.setVisibility(View.INVISIBLE);
-        resultContainer.setVisibility(View.INVISIBLE);
+    private void showUI() {
+        if (uiState.isIntro()) {
+            introContainer.setVisibility(View.VISIBLE);
+            chooseNumberContainer.setVisibility(View.INVISIBLE);
+            playGameContainer.setVisibility(View.INVISIBLE);
+            resultContainer.setVisibility(View.INVISIBLE);
+        } else if (uiState.isChosingNumbers()) {
+            introContainer.setVisibility(View.INVISIBLE);
+            chooseNumberContainer.setVisibility(View.VISIBLE);
+            playGameContainer.setVisibility(View.INVISIBLE);
+            resultContainer.setVisibility(View.INVISIBLE);
+        } else if (uiState.isPlayingGame()) {
+            introContainer.setVisibility(View.INVISIBLE);
+            chooseNumberContainer.setVisibility(View.INVISIBLE);
+            playGameContainer.setVisibility(View.VISIBLE);
+            resultContainer.setVisibility(View.INVISIBLE);
+        } else if (uiState.isResult()) {
+            introContainer.setVisibility(View.INVISIBLE);
+            chooseNumberContainer.setVisibility(View.INVISIBLE);
+            playGameContainer.setVisibility(View.INVISIBLE);
+            resultContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
      * Handle all events received from event bus.
      */
     private void handleEventData(Pair<String, Object> event) {
-
+        if (event.first.equalsIgnoreCase(AppEvents.PLAY_GAME_CLICKED)) {
+            handlePlayGameClicked();
+        } else if (event.first.equalsIgnoreCase(AppEvents.SELECT_LARGE_NUMBER_CLICKED)) {
+            handleLargeNumberSelection();
+        } else if (event.first.equalsIgnoreCase(AppEvents.SELECT_SMALL_NUMBER_CLICKED)) {
+            handleSmallNumberSelection();
+        } else if (event.first.equalsIgnoreCase(AppEvents.RANDOM_NUMBERS_CHOSEN)) {
+            if (event.second instanceof List) {
+                handleNumbersChosen((List<Integer>) event.second);
+            }
+        }
     }
 
     /**
@@ -184,5 +227,86 @@ public class GameActivity extends BaseActivity {
      */
     private ResultFragment getResultFrag() {
         return (ResultFragment) getSupportFragmentManager().findFragmentByTag(FRAG_TAG_RESULT);
+    }
+
+    private void handlePlayGameClicked() {
+        uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
+        showUI();
+    }
+
+    private void handleSmallNumberSelection() {
+        chooseNumberFragment.selectSmallNumbers();
+    }
+
+    private void handleLargeNumberSelection() {
+        chooseNumberFragment.selectLargeNumbers();
+    }
+
+    private void handleNumbersChosen(List<Integer> list) {
+        uiState = uiState.withBuild().mode(UIState.MODE_PLAY_THE_GAME).build();
+        showUI();
+        playFragment.handleNumbersSelected(list);
+    }
+
+    private void handleBackPressed() {
+        if (uiState.isResult()) {
+            uiState = uiState.withBuild().mode(UIState.MODE_PLAY_THE_GAME).build();
+            showUI();
+        } else if (uiState.isPlayingGame()) {
+            uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
+            showUI();
+        } else if (uiState.isChosingNumbers()) {
+            uiState = uiState.withBuild().mode(UIState.MODE_INTRO).build();
+            showUI();
+        } else if (uiState.isIntro()) {
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * Class for maintaining Game UI state.
+     */
+    @AutoValue
+    public abstract static class UIState implements Parcelable {
+
+        static final int MODE_INTRO = 0x01;
+        static final int MODE_CHOOSE_NUMBERS = 0x02;
+        static final int MODE_PLAY_THE_GAME = 0x03;
+        static final int MODE_RESULT = 0x04;
+
+        static Builder builder() {
+            return new AutoValue_GameActivity_UIState.Builder();
+        }
+
+        abstract int mode();
+
+        boolean isIntro() {
+            return mode() == MODE_INTRO;
+        }
+
+        boolean isChosingNumbers() {
+            return mode() == MODE_CHOOSE_NUMBERS;
+        }
+
+        boolean isPlayingGame() {
+            return mode() == MODE_PLAY_THE_GAME;
+        }
+
+        boolean isResult() {
+            return mode() == MODE_RESULT;
+        }
+
+        public abstract Builder toBuilder();
+
+        private Builder withBuild() {
+            return toBuilder();
+        }
+
+        @AutoValue.Builder
+        public abstract static class Builder {
+            abstract UIState build();
+
+            abstract Builder mode(int m);
+        }
     }
 }
