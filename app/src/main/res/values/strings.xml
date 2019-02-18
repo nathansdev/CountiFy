@@ -9,6 +9,7 @@
     <string name="start">start</string>
     <string name="timer_hint">00:00</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="time_up">Time Up</string>
     <string name="alert">Alert!</string>
     <string name="reset">reset</string>
@@ -17,4 +18,10 @@
     <string name="multiply_operator">*</string>
     <string name="divide_operator">/</string>
     <string name="solution">solution</string>
+    <string name="result_hint">Result:</string>
+    <string name="congrats">Congrats!</string>
+    <string name="steps">Steps!</string>
+    <string name="target_reached_message">You have successfully completed the target. Click OK to restart new game
+    </string>
+    <string name="play_again_alert">Start from the beginning</string>
 </resources>

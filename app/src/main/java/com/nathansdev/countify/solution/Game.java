@@ -57,7 +57,9 @@ public class Game {
                 builder.append(solution.get(i)).append("\n");
             }
             if (!builder.toString().trim().isEmpty()) {
-                callbacks.onFoundSolution(builder.toString());
+                if (callbacks != null) {
+                    callbacks.onFoundSolution(builder.toString());
+                }
             }
         }
     }
@@ -68,5 +70,9 @@ public class Game {
             ret[i] = integers.get(i);
         }
         return ret;
+    }
+
+    public void hadleDestroy() {
+        this.callbacks = null;
     }
 }

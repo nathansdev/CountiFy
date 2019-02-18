@@ -266,11 +266,9 @@ public class GameActivity extends BaseActivity {
 
     private void handleBackPressed() {
         if (uiState.isResult()) {
-            uiState = uiState.withBuild().mode(UIState.MODE_PLAY_THE_GAME).build();
-            showUI();
+            resultFragment.onBackPressed();
         } else if (uiState.isPlayingGame()) {
-            uiState = uiState.withBuild().mode(UIState.MODE_CHOOSE_NUMBERS).build();
-            showUI();
+            playFragment.onBackPressed();
         } else if (uiState.isChoosingNumbers()) {
             uiState = uiState.withBuild().mode(UIState.MODE_INTRO).build();
             showUI();

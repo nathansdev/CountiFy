@@ -81,9 +81,8 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
     private List<Button> operandButtonList = new ArrayList<>();
     private int target;
     private boolean isTimerStarted = false;
-    private int operandX = 0, operandY = 0;
     private Operation currentOperation = null;
-    private Button currentOperand = null;
+    private Button buttonOperandPrevious = null;
     private StringBuilder builder = new StringBuilder();
 
     @Nullable
@@ -131,19 +130,32 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
         int min = 1;
         this.target = new Random().nextInt((max - min) + 1) + min;
         textTarget.setText(String.valueOf(target));
+        textTimer.setText(R.string.timer_hint);
+        textResult.setText("");
         setNumbers();
+        enableAllOperands();
         enableAllOperators();
     }
 
+    /**
+     * initializes operands.
+     */
     private void setNumbers() {
-        buttonOperandOne.setText(String.valueOf(randomNumberList.get(0)));
-        buttonOperandTwo.setText(String.valueOf(randomNumberList.get(1)));
-        buttonOperandThree.setText(String.valueOf(randomNumberList.get(2)));
-        buttonOperandFour.setText(String.valueOf(randomNumberList.get(3)));
-        buttonOperandFive.setText(String.valueOf(randomNumberList.get(4)));
-        buttonOperandSix.setText(String.valueOf(randomNumberList.get(5)));
+        try {
+            buttonOperandOne.setText(String.valueOf(randomNumberList.get(0)));
+            buttonOperandTwo.setText(String.valueOf(randomNumberList.get(1)));
+            buttonOperandThree.setText(String.valueOf(randomNumberList.get(2)));
+            buttonOperandFour.setText(String.valueOf(randomNumberList.get(3)));
+            buttonOperandFive.setText(String.valueOf(randomNumberList.get(4)));
+            buttonOperandSix.setText(String.valueOf(randomNumberList.get(5)));
+        } catch (IndexOutOfBoundsException e) {
+            Timber.e(e);
+        }
     }
 
+    /**
+     * timer task.
+     */
     private void startTimerTask() {
         isTimerStarted = true;
         buttonStart.setEnabled(false);
@@ -164,6 +176,9 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
         countDownTimer.start();
     }
 
+    /**
+     * shows timer alert when coundown expires.
+     */
     private void onTimerFinished() {
         isTimerStarted = false;
         new AlertDialog.Builder(getActivity())
@@ -209,7 +224,7 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
                 startTimerTask();
                 break;
             case R.id.button_reset:
-                resetGame();
+                reset();
                 break;
             case R.id.button_operand_one:
                 handleOnSelectOperand(buttonOperandOne);
@@ -246,54 +261,77 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
-    private void handleOnSelectOperand(Button operand) {
+    /**
+     * handles onClick of every operand.
+     */
+    private void handleOnSelectOperand(Button selectedOperand) {
         if (isTimerRunning()) {
             return;
         }
-        this.currentOperand = operand;
-        if (operandX == 0) {
-            this.operandX = Integer.parseInt(operand.getText().toString());
-        } else if (operandY == 0) {
-            this.operandX = Integer.parseInt(operand.getText().toString());
+        if (buttonOperandPrevious == null) {
+            Timber.d("if");
+            this.buttonOperandPrevious = selectedOperand;
+            disableOnlyCurrentOperand(selectedOperand);
+        } else if (currentOperation == null) {
+            Timber.d("else if");
+            this.buttonOperandPrevious = selectedOperand;
+            disableOnlyCurrentOperand(selectedOperand);
+        } else {
+            Timber.d("else");
+            doOperation(selectedOperand);
         }
-        if (currentOperation == null) {
-
-        }
-        doOperation();
     }
 
+    /**
+     * handles onClick of every operator.
+     */
     private void handleOnSelectOperator(Button buttonOperator, Operation operation) {
         if (isTimerRunning()) {
             return;
         }
         this.currentOperation = operation;
         disableCurrentOperator(buttonOperator);
-    }
-
-    private void resetGame() {
-        countDownTimer.cancel();
-        isTimerStarted = false;
-        buttonStart.setEnabled(true);
-        disableAllOperators();
-        handleNumbersSelected(randomNumberList);
-        operandX = 0;
-        operandY = 0;
-        currentOperation = null;
-        currentOperand = null;
-    }
-
-    private void doOperation() {
-        if (operandX != 0 && operandY != 0 && currentOperation != null) {
-            int result = currentOperation.solve(operandX, operandY);
-            builder.append(operandX).append(SPACE).append(currentOperation.symbol())
-                    .append(SPACE).append(operandY).append(EQUAL).append(result).append(NEXT);
-            Timber.d("current value %s", result);
-            Timber.d("builder text %s", builder);
-            currentOperand.setText(String.valueOf(result));
-            textResult.setText(builder);
+        if (buttonOperandPrevious != null) {
+            disableSelectedOperand(buttonOperandPrevious);
         }
     }
 
+    public void reset() {
+        countDownTimer.cancel();
+        isTimerStarted = false;
+        buttonStart.setEnabled(true);
+        buttonReset.setEnabled(false);
+        handleNumbersSelected(randomNumberList);
+        enableAllOperators();
+        enableAllOperands();
+        builder.setLength(0);
+        buttonOperandPrevious = null;
+        currentOperation = null;
+    }
+
+    /**
+     * performs selected operation eg : add, subtract.
+     */
+    private void doOperation(Button selectedOperand) {
+        if (buttonOperandPrevious != null && currentOperation != null) {
+            int operandX = Integer.parseInt(buttonOperandPrevious.getText().toString());
+            int operandY = Integer.parseInt(selectedOperand.getText().toString());
+            int result = currentOperation.operate(operandX, operandY);
+            builder.append(operandX).append(SPACE).append(currentOperation.symbol())
+                    .append(SPACE).append(operandY).append(EQUAL).append(result).append(NEXT);
+            Timber.d("current result %s", result);
+            Timber.d("builder text %s", builder);
+            selectedOperand.setText(String.valueOf(result));
+            textResult.setText(builder);
+            buttonOperandPrevious = selectedOperand;
+            currentOperation = null;
+            checkIfResultEqualToTarget(result);
+        }
+    }
+
+    /**
+     * disables current operator, enables remaining.
+     */
     private void disableCurrentOperator(Button buttonOperator) {
         for (Button button : operatorButtonList) {
             if (button.getId() == buttonOperator.getId()) {
@@ -304,7 +342,21 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
-    private void disableCurrentOperand(Button buttonOperator) {
+    /**
+     * disables current operand, enables nothing.
+     */
+    private void disableSelectedOperand(Button buttonOperator) {
+        for (Button button : operandButtonList) {
+            if (button.getId() == buttonOperator.getId()) {
+                button.setEnabled(false);
+            }
+        }
+    }
+
+    /**
+     * disables current operand, enables remaining.
+     */
+    private void disableOnlyCurrentOperand(Button buttonOperator) {
         for (Button button : operandButtonList) {
             if (button.getId() == buttonOperator.getId()) {
                 button.setEnabled(false);
@@ -314,24 +366,36 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * enables all operators.
+     */
     private void enableAllOperators() {
         for (Button button : operatorButtonList) {
             button.setEnabled(true);
         }
     }
 
+    /**
+     * disables all operators.
+     */
     private void disableAllOperators() {
         for (Button button : operatorButtonList) {
             button.setEnabled(false);
         }
     }
 
+    /**
+     * enables all operands.
+     */
     private void enableAllOperands() {
         for (Button button : operandButtonList) {
             button.setEnabled(true);
         }
     }
 
+    /**
+     * disables all operands.
+     */
     private void disableAllOperands() {
         for (Button button : operandButtonList) {
             button.setEnabled(false);
@@ -340,5 +404,48 @@ public class PlayFragment extends BaseFragment implements View.OnClickListener {
 
     private boolean isTimerRunning() {
         return !isTimerStarted;
+    }
+
+    /**
+     * show alert when the user presses back button
+     */
+    public void onBackPressed() {
+        isTimerStarted = false;
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.alert)
+                .setMessage(R.string.play_again_alert)
+                .setCancelable(true)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                reset();
+                dialog.dismiss();
+                eventBus.send(new Pair<>(AppEvents.PLAY_GAME_AGAIN_CLICKED, null));
+            }
+        }).show();
+    }
+
+    /**
+     * shows alert when the users solves the target.
+     *
+     * @param result
+     */
+    private void checkIfResultEqualToTarget(int result) {
+        if (result == target) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.congrats)
+                    .setMessage(R.string.target_reached_message)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                        reset();
+                        dialog.dismiss();
+                        eventBus.send(new Pair<>(AppEvents.PLAY_GAME_AGAIN_CLICKED, null));
+                    }).show();
+        }
     }
 }

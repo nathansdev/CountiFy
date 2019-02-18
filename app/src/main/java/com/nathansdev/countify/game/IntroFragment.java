@@ -47,7 +47,6 @@ public class IntroFragment extends BaseFragment {
     protected void setUpView(View view) {
         buttonPlay.setOnClickListener(v -> {
             eventBus.send(new Pair<>(AppEvents.PLAY_GAME_CLICKED, null));
-            return;
         });
     }
 

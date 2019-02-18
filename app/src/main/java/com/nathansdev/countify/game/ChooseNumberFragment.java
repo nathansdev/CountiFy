@@ -70,7 +70,6 @@ public class ChooseNumberFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 eventBus.send(new Pair<>(AppEvents.SELECT_LARGE_NUMBER_CLICKED, null));
-                return;
             }
         });
 
@@ -78,7 +77,6 @@ public class ChooseNumberFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 eventBus.send(new Pair<>(AppEvents.SELECT_SMALL_NUMBER_CLICKED, null));
-                return;
             }
         });
         initNumbers();
