@@ -70,7 +70,6 @@ public class ChooseNumberFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 eventBus.send(new Pair<>(AppEvents.SELECT_LARGE_NUMBER_CLICKED, null));
-                return;
             }
         });
 
@@ -78,7 +77,6 @@ public class ChooseNumberFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 eventBus.send(new Pair<>(AppEvents.SELECT_SMALL_NUMBER_CLICKED, null));
-                return;
             }
         });
         initNumbers();
@@ -88,7 +86,7 @@ public class ChooseNumberFragment extends BaseFragment {
      * initializing list to choose random numbers.
      */
     private void initNumbers() {
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             smallNumbersList.add(i);
             smallNumbersList.add(i);
         }
@@ -140,5 +138,11 @@ public class ChooseNumberFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    public void reset() {
+        builder.setLength(0);
+        textChosenNumber.setText("");
+        chosenNumbersList.clear();
     }
 }

@@ -9,6 +9,8 @@
               android:layout_marginTop="16dp"
               android:text="@string/result"
               android:textSize="@dimen/super_large_text"
+              android:padding="10dp"
+              android:textColor="@android:color/white"
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
               android:layout_height="wrap_content"/>
@@ -17,18 +19,20 @@
               android:id="@+id/text_result"
               app:layout_constraintTop_toTopOf="parent"
               app:layout_constraintBottom_toBottomOf="parent"
-              android:textSize="@dimen/medium_text"
+              android:textSize="@dimen/post_large_text"
+              android:textColor="@android:color/white"
               app:layout_constraintVertical_bias="0.3"
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
               android:layout_height="wrap_content"/>
 
-    <Button android:layout_width="wrap_content"
+    <Button android:layout_width="100dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/button_play_again"
             android:text="@string/play_again"
+            android:background="@drawable/bg_button_play"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.8"
             android:layout_height="wrap_content"/>

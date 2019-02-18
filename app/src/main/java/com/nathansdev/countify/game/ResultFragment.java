@@ -1,5 +1,7 @@
 package com.nathansdev.countify.game;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -73,5 +75,41 @@ public class ResultFragment extends BaseFragment implements GameCallbacks {
     public void onFoundSolution(String result) {
         Timber.d("onFoundSolution %s", result);
         textResult.setText(result);
+    }
+
+    /**
+     * show alert when the user presses back button
+     */
+    public void onBackPressed() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.alert)
+                .setMessage(R.string.play_again_alert)
+                .setCancelable(true)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                reset();
+                dialog.dismiss();
+                eventBus.send(new Pair<>(AppEvents.PLAY_GAME_AGAIN_CLICKED, null));
+            }
+        }).show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (game != null) {
+            game.hadleDestroy();
+        }
+        super.onDestroyView();
+    }
+
+    private void reset() {
+        this.game = null;
+        textResult.setText("");
     }
 }
